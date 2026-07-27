@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Set Up Two-Factor Authentication</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="card">
+    <h1>Two-Factor Authentication</h1>
+
+    <% if (alreadyEnabled) { %>
+      <p class="success">2FA is already enabled on your account.</p>
+      <a class="button" href="/dashboard">Back to dashboard</a>
+    <% } else { %>
+      <p class="hint">Scan this QR code with an authenticator app (Google Authenticator, Authy, etc.), then enter the 6-digit code it shows to confirm setup.</p>
+
+      <% if (qrCode) { %>
+        <img src="<%= qrCode %>" alt="2FA QR code" class="qr-code">
+      <% } %>
+
+      <% if (error) { %>
+        <ul class="errors">
+          <li><%= error %></li>
+        </ul>
+      <% } %>
+
+      <form method="POST" action="/2fa/setup" novalidate>
+        <label>
+          Enter code to confirm
+          <input type="text" name="token" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required autofocus>
+        </label>
+        <button type="submit">Enable 2FA</button>
+      </form>
+    <% } %>
+  </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - Secure Login App</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="card">
+    <h1>Create an account</h1>
+
+    <% if (errors.length) { %>
+      <ul class="errors">
+        <% errors.forEach(function (err) { %>
+          <li><%= err %></li>
+        <% }) %>
+      </ul>
+    <% } %>
+
+    <form method="POST" action="/register" novalidate>
+      <label>
+        Username
+        <input type="text" name="username" value="<%= old.username || '' %>" required autofocus>
+      </label>
+
+      <label>
+        Email
+        <input type="email" name="email" value="<%= old.email || '' %>" required>
+      </label>
+
+      <label>
+        Password
+        <input type="password" name="password" required minlength="8">
+      </label>
+      <p class="hint">At least 8 characters, with an uppercase letter, a lowercase letter, and a number.</p>
+
+      <label>
+        Confirm password
+        <input type="password" name="confirmPassword" required minlength="8">
+      </label>
+
+      <button type="submit">Register</button>
+    </form>
+
+    <p class="alt-link">Already have an account? <a href="/login">Log in</a></p>
+  </div>
+</body>
+</html>
