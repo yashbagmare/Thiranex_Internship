@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Password Strength Checker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      padding-top: 50px;
+    }
+
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 350px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: #9C27B0;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    button:hover {
+      background-color: #7B1FA2;
+    }
+
+    .bar-container {
+      width: 100%;
+      background-color: #ddd;
+      height: 10px;
+      border-radius: 5px;
+      margin-top: 15px;
+    }
+
+    #strengthBar {
+      height: 10px;
+      width: 0%;
+      border-radius: 5px;
+      background-color: red;
+      transition: 0.3s;
+    }
+
+    #strengthText {
+      margin-top: 8px;
+      font-weight: bold;
+    }
+
+    ul {
+      font-size: 13px;
+      color: #555;
+      padding-left: 18px;
+    }
+
+    #suggestion {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #333;
+      background-color: #f9f9f9;
+      padding: 8px;
+      border-radius: 4px;
+    }
+
+    #message {
+      margin-top: 10px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Password Strength Checker</h2>
+
+    <input type="password" id="passwordInput" placeholder="Enter your password" onkeyup="checkPassword()">
+
+    <label style="font-size: 13px; display: block; margin-top: 8px;">
+      <input type="checkbox" id="showPassword" onclick="toggleShowPassword()" style="width: auto;">
+      Show Password
+    </label>
+
+    <div class="bar-container">
+      <div id="strengthBar"></div>
+    </div>
+    <div id="strengthText">Strength: -</div>
+
+    <ul>
+      <li id="lenCheck">At least 8 characters</li>
+      <li id="upperCheck">One uppercase letter</li>
+      <li id="lowerCheck">One lowercase letter</li>
+      <li id="numCheck">One number</li>
+      <li id="specialCheck">One special character</li>
+    </ul>
+
+    <div id="suggestion"></div>
+
+    <button onclick="generatePassword()">Suggest a Strong Password</button>
+    <button onclick="checkReuse()">Check if Already Used</button>
+
+    <div id="message"></div>
+  </div>
+
+<script>
+  var oldPasswords = ["password123", "qwerty123", "admin123"];
+
+  function toggleShowPassword() {
+    var input = document.getElementById("passwordInput");
+    var checkbox = document.getElementById("showPassword");
+    input.type = checkbox.checked ? "text" : "password";
+  }
+
+  function checkPassword() {
+    var password = document.getElementById("passwordInput").value;
+
+    var lengthOk = password.length >= 8;
+    var upperOk = /[A-Z]/.test(password);
+    var lowerOk = /[a-z]/.test(password);
+    var numberOk = /[0-9]/.test(password);
+    var specialOk = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    setCheck("lenCheck", lengthOk);
+    setCheck("upperCheck", upperOk);
+    setCheck("lowerCheck", lowerOk);
+    setCheck("numCheck", numberOk);
+    setCheck("specialCheck", specialOk);
+
+    var score = 0;
+    if (lengthOk) score++;
+    if (upperOk) score++;
+    if (lowerOk) score++;
+    if (numberOk) score++;
+    if (specialOk) score++;
+
+    var bar = document.getElementById("strengthBar");
+    var text = document.getElementById("strengthText");
+    var suggestion = document.getElementById("suggestion");
+
+    if (password.length === 0) {
+      bar.style.width = "0%";
+      bar.style.backgroundColor = "red";
+      text.innerText = "Strength: -";
+      suggestion.innerText = "";
+      return;
+    }
+
+    var percent = (score / 5) * 100;
+    bar.style.width = percent + "%";
+
+    if (score <= 2) {
+      bar.style.backgroundColor = "red";
+      text.innerText = "Strength: Weak";
+      suggestion.innerText = "Tip: Add uppercase letters, numbers, and symbols to make it stronger.";
+    } else if (score <= 4) {
+      bar.style.backgroundColor = "orange";
+      text.innerText = "Strength: Medium";
+      suggestion.innerText = "Tip: Try making it a bit longer or add a special character.";
+    } else {
+      bar.style.backgroundColor = "green";
+      text.innerText = "Strength: Strong";
+      suggestion.innerText = "Good job! This is a strong password.";
+    }
+  }
+
+  function setCheck(id, passed) {
+    var item = document.getElementById(id);
+    item.style.color = passed ? "green" : "#555";
+  }
+
+  function generatePassword() {
+    var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+    var newPassword = "";
+    for (var i = 0; i < 12; i++) {
+      var randomIndex = Math.floor(Math.random() * chars.length);
+      newPassword += chars[randomIndex];
+    }
+
+    document.getElementById("passwordInput").value = newPassword;
+    checkPassword();
+    document.getElementById("message").innerText = "Suggested password: " + newPassword;
+  }
+
+  function checkReuse() {
+    var password = document.getElementById("passwordInput").value;
+    var message = document.getElementById("message");
+
+    if (password === "") {
+      message.innerText = "Please enter a password first.";
+      return;
+    }
+
+    if (oldPasswords.includes(password)) {
+      message.innerText = "This password has been used before. Please choose a different one.";
+      message.style.color = "red";
+    } else {
+      oldPasswords.push(password);
+      message.innerText = "This password is new. It has been saved to history.";
+      message.style.color = "green";
+    }
+  }
+</script>
+
+</body>
+</html>
